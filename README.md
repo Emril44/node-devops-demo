@@ -86,8 +86,7 @@ node-devops-demo/
 
 ## Architecture Diagram
 
-*(To be added)*
-
+![Architecture Diagram](docs/architecture.png)
 
 
 ## Future Improvements
