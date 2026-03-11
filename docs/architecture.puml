@@ -1,0 +1,24 @@
+@startuml name Node DevOps Demo Deployment Flow
+top to bottom direction
+
+actor Developer
+actor User
+
+rectangle "GitHub Repository" as repo
+rectangle "GitHub Actions" as gha
+rectangle "Docker Hub" as hub
+
+node "AWS EC2 Instance" {
+  rectangle "Docker Compose" {
+    rectangle "Node.js App Container" as app
+    database "PostgreSQL Container" as postgres
+  }
+}
+
+Developer --> repo : push changes
+repo --> gha : trigger workflow
+gha --> hub : build and push image
+gha --> app : deploy latest image via SSH
+User --> app : access application
+app --> postgres : read/write data
+@enduml
