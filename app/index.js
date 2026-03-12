@@ -1,9 +1,9 @@
 const http = require('http');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
 const PORT = process.env.PORT || 3001;
 
-const client = new Client({
+const pool = new Pool({
     host: process.env.DB_HOST || 'db',
     user: process.env.DB_USER ||  'postgres',
     password:  process.env.DB_PASSWORD || 'postgres',
@@ -11,15 +11,18 @@ const client = new Client({
     port:  process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432, 
 });
 
-client.connect()
-    .then(() => console.log('Connected to Postgres!'))
-    .catch(err => console.error('Connection error! ', err));
-
 const server = http.createServer(async (req, res) => {
     if(req.url === '/health') {
-        try {
-            await client.query('SELECT 1');
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({
+            status: 'ok'
+        }));
+        return;
+    }
 
+    if(req.url === '/ready') {
+        try {
+            await pool.query('SELECT 1');
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.end(JSON.stringify({
                 status: 'ok',
@@ -35,6 +38,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('this is node on docker, hello :D (no pm2 allowed!!!)');
 });
 
