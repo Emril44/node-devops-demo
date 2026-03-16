@@ -20,17 +20,17 @@ jobs:
             - name: Extractg image metadata
               id: meta
               run: |
-                echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+                echo "image_tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
             - name: Build Docker image
               run: |
                 docker build \
                   -f docker/Dockerfile \
-                  -t ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:${{ env.IMAGE_TAG }} \
+                  -t ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:${{ steps.meta.outputs.image_tag }} \
                   -t ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:latest \
                   .
 
             - name: Push Docker image
               run: |
-                docker push ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:${{ env.IMAGE_TAG }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:${{ steps.meta.outputs.image_tag }}
                 docker push ${{ secrets.DOCKER_USERNAME }}/node-devops-demo:latest
